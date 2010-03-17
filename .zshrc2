@@ -94,9 +94,12 @@ proj () {
         selectProject
     else
         export CURVEPROJECT=$1
-        export RPROMPT='['$CURVEPROJECT']'
         hero
     fi
+}
+
+projview () {
+    cd ${CURVESPACE}/${1}
 }
 
 clearProject() {
@@ -176,8 +179,7 @@ commitCheck () {
     svn diff | grep -i "XXX\|TODO\|debug\|wtf\|dumpObject" | egrep -v "^-"
 }
 
-#SHAREDFOLDER=/home/compton/shared/shared
-#fpath=(${SHAREDFOLDER}/.fun $fpath)
-#autoload -U ${SHAREDFOLDER}/.fun/*(:t)
-#compinit
+SHAREDFOLDER=/home/shared
+fpath=(${SHAREDFOLDER}/.fun $fpath)
+compinit
 
