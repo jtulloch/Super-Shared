@@ -42,6 +42,10 @@ elif [ "$1" = "init" ]; then
     cat ${HOME}/.vimrc >> ${HOME}/temp.zsh
     mv ${HOME}/temp.zsh ${HOME}/.vimrc
 
+    if [ -d ${HOME}/.curverc ]; then
+        echo "SHAREDPATH=${SHARED}/${PROJNAME} && export SHAREDPATH" > ${HOME}/${PROJNAME}
+    fi
+
     if [ -d ${HOME}/.vim ]; then
         echo "vim directory exists, overwrite [y/n]"
         read ANSWER
