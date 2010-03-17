@@ -1,0 +1,6 @@
+#compdef testUnit 
+
+local testFileList
+testFileList=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/app/models/`
+
+_arguments :": :(${testFileList})"

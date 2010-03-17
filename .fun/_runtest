@@ -1,0 +1,22 @@
+#compdef runtest
+
+##
+##  check man zshcompsys and search for _arguments
+##
+
+local unitTests
+unitTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/app/models/`
+
+local functionalTests
+functionalTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/controllers/`
+
+local libTests
+libTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/app/lib/`
+
+local usTests
+usTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/us/`
+
+_arguments  "-m:model tests:(all ${unitTests})" \
+            "-f:functional tests:(all ${functionalTests})" \
+            "-l:library tests:(${libTests})" \
+            "-u:us unit tests:(${usTests})" 

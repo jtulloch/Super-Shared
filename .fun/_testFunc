@@ -1,0 +1,6 @@
+#compdef testFunc 
+
+local testFileList
+testFileList=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/controllers/`
+
+_arguments :": :(${testFileList})"
