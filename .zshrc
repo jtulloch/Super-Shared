@@ -12,9 +12,9 @@ alias phpsnip='sh ${SHAREDPATH}/snippets.sh php_snippets'
 #
 # Hero Aliases
 #
-alias listA='cat ~/.zshrc |grep alias && cat ${SHAREDPATH}/.zshrc2 |grep alias'
+alias listA='cat ~/.zshrc |grep alias && cat ${SHAREDPATH}/.zshrc |grep alias'
 alias zrc='vi ~/.zshrc && source ~/.zshrc'
-alias zrcs='sudo vi ${SHAREDPATH}/.zshrc2 && source ~/.zshrc'
+alias zrcs='sudo vi ${SHAREDPATH}/.zshrc && source ~/.zshrc'
 alias svnvimdiff="svn diff --diff-cmd /home/dale/scripts/vimdiff-svn-wrapper.sh"
 alias svnconflict='svn st | egrep "^C"'
 alias svnUp='sh ${SHAREDPATH}/scripts/svnupdate.sh'
@@ -119,6 +119,9 @@ selectProject() {
 IFS_BAK=$IFS
 IFS="
 "
+
+    echo "0) None"
+
     for PROJ in `listHeroes.sh`
     do
         CURVEPROJECTS+=($PROJ)
@@ -129,10 +132,16 @@ IFS=$IFS_BAK
 IFS_BAK=
 
     read ANSWER;
-    if [ "${ANSWER}" -ne "" ]; then
+    if [ "${ANSWER}" = "" ]; then
+        CURVEPROJECT=""
+        export CURVEPROJECT
+        cd
+    elif [ "${ANSWER}" != "0" ]; then
         proj ${CURVEPROJECTS[$ANSWER]%% *}
     else
-        proj ${CURVEPROJECT}
+        CURVEPROJECT=""
+        export CURVEPROJECT
+        cd
     fi
 }
 
