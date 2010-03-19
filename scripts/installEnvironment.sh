@@ -42,8 +42,9 @@ elif [ "$1" = "init" ]; then
     cat ${HOME}/.vimrc >> ${HOME}/temp.zsh
     mv ${HOME}/temp.zsh ${HOME}/.vimrc
 
-    if [ -d ${HOME}/.curverc ]; then
-        echo "SHAREDPATH=${SHARED}/${PROJNAME} && export SHAREDPATH" > ${HOME}/${PROJNAME}
+    if [ -f ${HOME}/.curverc ]; then
+        echo "adding\n"
+        echo "SHAREDPATH=${SHARED}/${PROJNAME} && export SHAREDPATH" >> ${HOME}/.curverc
     fi
 
     if [ -d ${HOME}/.vim ]; then
