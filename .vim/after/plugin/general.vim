@@ -75,8 +75,9 @@ helptags ~/.vim/doc
 
 cabbr diff :VCSVimDiff
 
-set t_Co=256
-colors railscasts
+"set t_Co=256
+"colors railscasts
+"colorscheme BlackSea
 set hlsearch
 
 
