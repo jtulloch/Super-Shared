@@ -6,5 +6,5 @@ let st = g:snip_start_tag
 let et = g:snip_end_tag
 let cd = g:snip_elem_delim
 
-exec "so /home/shared/snippets/javascript_snippets.vim"
+exec "so ${SHAREDPATH}/snippets/javascript_snippets.vim"
 
