@@ -29,7 +29,7 @@ COMMITFILES=""
 ADDFILES=""
 getInput "Update? (y/n/q)";
 if [ "${ANSWER}" = "y" ]; then
-    /home/shared/scripts/svnupdate.sh
+    ${SHAREDPATH}/scripts/svnupdate.sh
 fi
 ANSWER=0
 
@@ -37,8 +37,8 @@ for i in `svnstatus`
 do
     FOO=`echo $i | sed "s/+//g"`
     STATUS=${i%% *}
-    FILENAME=${i##$STATUS      }
-    FILENAME=`echo $FILENAME | sed "s/A  +   //g"`
+    FILENAME=${i##$STATUS       }
+    #FILENAME=`echo $FILENAME | sed "s/A  +   //g"`
 
     ANSWER=0
 
@@ -68,7 +68,7 @@ do
             getInput "Commit ${FILENAME}? (r/d/y/n/q)";
 
             if [ "${ANSWER}" = "d" ]; then
-                svn diff --diff-cmd /home/shared/scripts/vimdiff-svn-wrapper.sh ${FILENAME}
+                svn diff --diff-cmd ${SHAREDPATH}/scripts/vimdiff-svn-wrapper.sh ${FILENAME}
                 echo
                 echo "******"
                 echo "* Checking file again..."
@@ -84,7 +84,7 @@ do
     fi
 
     if [ "${ANSWER}" = "y" ]; then
-        COMMITFILES="${FILENAME} ${COMMITFILES}"
+        COMMITFILES=(${FILENAME} ${COMMITFILES})
     fi
 done
 
@@ -102,14 +102,7 @@ echo
 echo "Check in these items? (y/n)"
 read ANSWER;
 if [ "${ANSWER}" = "y" ]; then
-
-    # Clean up the file list because the commit command fails with various new lines, etc still in the string
-    IFS=${ORIGINALIFS}
-    for FILENAME in ${COMMITFILES}; do
-        FILELIST="${FILELIST} ${FILENAME}"
-    done
-
-    svn commit ${FILELIST}
+    svn ci ${COMMITFILES}
 fi
 
 exit 0
