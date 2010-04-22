@@ -101,8 +101,7 @@ runtest() {
         fi
 
         testArg+=${testPath}
-        echo $testCommand
-        echo $testArg
+
         cd ${CURVESPACE}/${CURVEPROJECT} && ${testCommand} ${testArg}
     fi
 }
