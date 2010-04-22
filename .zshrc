@@ -35,6 +35,7 @@ alias procs='gotoHeroPath app/installers/storedProcedures'
 alias public='gotoHeroPath public'
 alias script='gotoHeroPath public/javascripts'
 alias widget='gotoHeroPath public/javascripts/curve'
+alias doc='gotoHeroPath public/javascripts/curve/doc/pages'
 alias style='gotoHeroPath public/stylesheets/curve'
 alias dojo='gotoHeroPath public/javascripts/dojo/'
 alias dijit='gotoHeroPath public/javascripts/dijit/'
@@ -57,38 +58,51 @@ runtest() {
     local testCommand
     local testArg
     testCommand='./script/test'
-    testArg='test/'
+    testArg=()
 
     if [ -z $1 ]; then
         echo "No file specified"
     else
-        case $1 in
-        "-f"*)
-            testArg+='functional'
+        secondLastArg=''
+        lastArg=''
+        for arg in $@
+        do
+            testArg+="${secondLastArg}"
+            secondLastArg="${lastArg}"
+            lastArg="${arg}"
+        done
 
-            if [ "${2}" != "all" ]; then
-                testArg+="/controllers/"
+        testPath='test/'
+        case ${secondLastArg} in
+        "-f"*)
+            testPath+='functional'
+
+            if [ "${lastArg}" != "all" ]; then
+                testPath+="/controllers/"
             fi
         ;;
         "-m"*)
-            testArg+='unit'
+            testPath+='unit'
 
-            if [ "${2}" != "all" ]; then
-                testArg+="/app/models/"
+            if [ "${lastArg}" != "all" ]; then
+                testPath+="/app/models/"
             fi
         ;;
         "-u"*)
-            testArg+='unit/us/'
+            testPath+='unit/us/'
         ;;
         "-l"*)
-            testArg+='unit/app/lib/'
+            testPath+='unit/app/lib/'
         ;;
         esac
 
-        if [ "${2}" != "all" ]; then
-            testArg+="${2}"
+        if [ "${lastArg}" != "all" ]; then
+            testPath+="${lastArg}"
         fi
 
+        testArg+=${testPath}
+        echo $testCommand
+        echo $testArg
         cd ${CURVESPACE}/${CURVEPROJECT} && ${testCommand} ${testArg}
     fi
 }
