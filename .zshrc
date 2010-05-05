@@ -94,6 +94,9 @@ runtest() {
         "-l"*)
             testPath+='unit/app/lib/'
         ;;
+        "-ak"*)
+            testPath+='unit/akelos/'
+        ;;
         esac
 
         if [ "${lastArg}" != "all" ]; then
