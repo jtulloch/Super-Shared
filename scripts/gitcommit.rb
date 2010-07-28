@@ -42,6 +42,9 @@ end
 def handle_new_file file_name
     complete = false
     while !complete do
+        puts ""
+        report_warnings(file_name)
+
         option = get_choice("Commit new file: #{file_name}?",{'y'=>"Add the file",'n'=>"Don't add the file",'v'=>'View the file','x'=>"Delete the file"})
 
         case option
@@ -62,6 +65,9 @@ end
 def handle_modified_file file_name, status_line
     complete = false
     while !complete do
+        puts ""
+        report_warnings(file_name)
+
         option = get_choice("Commit modified file: #{file_name}?",{'y'=>"Commit the file",'n'=>"Don't commit the file",'v'=>'Diff the file','r'=>"Revert the file"})
 
         case option
@@ -78,6 +84,17 @@ def handle_modified_file file_name, status_line
                 puts "Sorry, revert not implemented.  Select 'n' to skip."
             else nil
         end
+    end
+end
+
+def report_warnings file_name
+    key_words = ['XXX', 'debug', 'warn','TODO','wtf','dumpObject']
+    changes_grep_command = "git diff #{file_name} | egrep -v '^-' | grep --color=always -i '#{key_words.join('\|')}'"
+    
+    warnings = `#{changes_grep_command}`
+    if warnings.strip != ''
+        puts "Possible unfinished changes or debugging found."
+        puts warnings
     end
 end
 
