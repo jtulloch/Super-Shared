@@ -38,7 +38,7 @@ do
     FOO=`echo $i | sed "s/+//g"`
     STATUS=${i%% *}
     FILENAME=${i##$STATUS       }
-    #FILENAME=`echo $FILENAME | sed "s/A  +   //g"`
+    FILENAME=`echo $FILENAME | sed "s/A  +    //g"`
 
     ANSWER=0
 

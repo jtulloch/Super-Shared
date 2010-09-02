@@ -39,14 +39,15 @@ nmap <F5> [I:let nr = input("Which one: ") <Bar>exe "normal " . nr ."[\t"<CR>
 
 
 " Load the akelos template snippets
-au BufRead,BufNewFile *.tpl exec "so /home/dale/.vim/after/ftplugin/tpl_snippets.vim"
+au BufRead,BufNewFile *.tpl exec "so ${SHAREDPATH}/.vim/after/ftplugin/tpl_snippets.vim"
 
 " jslint command
 let jslintcommand = "/usr/bin/jslint/jslintfile.sh %"
 let w3mdump = "w3m -T text/html -dump"
-let diffCreator = "php ~/scripts/parseLineProblems.php % "
+let diffCreator = "php ${SHAREDPATH}/scripts/parseLineProblems.php % "
 let commandheight = "15"
 set splitbelow
+set splitright
 map ,j :let fname = tempname()<CR>:exe "!".jslintcommand." \| ".w3mdump." \| ".diffCreator.fname<CR>:exe "vert diffsplit ".fname<CR>
 "map ,j :let fname = tempname()<CR><C-W><C-O>:silent exe "!".jslintcommand." \| ".w3mdump." > " . fname<CR>:exe commandheight." split " . fname<CR><C-W>k<C-L>
 " end jslint stuff
@@ -55,8 +56,8 @@ map ,j :let fname = tempname()<CR>:exe "!".jslintcommand." \| ".w3mdump." \| ".d
 command! -nargs=0 -bar LoadDB call s:RunCommand("go")
 nnoremap ,d :LoadDB<CR>
 
-set winheight=20
-set winminheight=20
+"set winheight=20
+"set winminheight=20
 nnoremap <C-W>. 10<C-W>>
 nnoremap <C-W>, 10<C-W><
 nnoremap <C-W>0 10<C-W>+
@@ -70,6 +71,7 @@ nnoremap <C-L> <C-W>l
 nnoremap <C-P> :mksession! ~/tmp/save.session<CR>:qa<CR>
 nnoremap <C-D> :qa<CR>
 nnoremap <C-A> :q<CR>
+nnoremap <C-W>v :vsp 
 
 helptags ~/.vim/doc
 

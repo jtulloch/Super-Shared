@@ -29,14 +29,12 @@ alias contr='gotoHeroPath app/controllers'
 alias model='gotoHeroPath app/models'
 alias claim='gotoHeroPath app/lib/claim'
 alias conv='gotoHeroPath app/lib/conversion/lib'
-alias smile='gotoHeroPath app/lib/reminder'
 alias views='gotoHeroPath app/views'
 alias inst='gotoHeroPath app/installers'
 alias procs='gotoHeroPath app/installers/storedProcedures'
 alias public='gotoHeroPath public'
 alias script='gotoHeroPath public/javascripts'
 alias widget='gotoHeroPath public/javascripts/curve'
-alias doc='gotoHeroPath public/javascripts/curve/doc/pages'
 alias style='gotoHeroPath public/stylesheets/curve'
 alias dojo='gotoHeroPath public/javascripts/dojo/'
 alias dijit='gotoHeroPath public/javascripts/dijit/'
@@ -48,7 +46,7 @@ alias tstfunc='root && ./script/test test/functional'
 alias tstunit='root && ./script/test test/unit'
 alias tstall='root && ./script/test test/unit && ./script/test test/functional'
 alias tdata='gotoHeroPath test/fixtures/app/installers/data'
-alias db='psql -h ${CURVE_POSTGRES_SERVER} -U $CURVEPROJECT'
+alias db='psql -h ${CURVE_POSTGRES_SERVER} $CURVEPROJECT'
 alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$CURVEPROJECT'
 alias cleandb='root && psql -h ${CURVE_POSTGRES_SERVER} -f ${CURVEPROJECT}_dump.sql $CURVEPROJECT'
 alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U ${CURVEPROJECT} -f ${CURVEPROJECT}_dump.sql ${CURVEPROJECT}'
@@ -59,52 +57,37 @@ runtest() {
     local testCommand
     local testArg
     testCommand='./script/test'
-    testArg=()
+    testArg='test/'
 
     if [ -z $1 ]; then
         echo "No file specified"
     else
-        secondLastArg=''
-        lastArg=''
-        for arg in $@
-        do
-            testArg+="${secondLastArg}"
-            secondLastArg="${lastArg}"
-            lastArg="${arg}"
-        done
-
-        testPath='test/'
-        case ${secondLastArg} in
+        case $1 in
         "-f"*)
-            testPath+='functional'
+            testArg+='functional'
 
-            if [ "${lastArg}" != "all" ]; then
-                testPath+="/controllers/"
+            if [ "${2}" != "all" ]; then
+                testArg+="/controllers/"
             fi
         ;;
         "-m"*)
-            testPath+='unit'
+            testArg+='unit'
 
-            if [ "${lastArg}" != "all" ]; then
-                testPath+="/app/models/"
+            if [ "${2}" != "all" ]; then
+                testArg+="/app/models/"
             fi
         ;;
         "-u"*)
-            testPath+='unit/us/'
+            testArg+='unit/us/'
         ;;
         "-l"*)
-            testPath+='unit/app/lib/'
-        ;;
-        "-ak"*)
-            testPath+='unit/akelos/'
+            testArg+='unit/app/lib/'
         ;;
         esac
 
-        if [ "${lastArg}" != "all" ]; then
-            testPath+="${lastArg}"
+        if [ "${2}" != "all" ]; then
+            testArg+="${2}"
         fi
-
-        testArg+=${testPath}
 
         cd ${CURVESPACE}/${CURVEPROJECT} && ${testCommand} ${testArg}
     fi
