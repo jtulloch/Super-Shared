@@ -54,6 +54,7 @@ alias cleandb='root && psql -h ${CURVE_POSTGRES_SERVER} -f ${CURVEPROJECT}_dump.
 alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U ${CURVEPROJECT} -f ${CURVEPROJECT}_dump.sql ${CURVEPROJECT}'
 alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} && createdb -h ${CURVE_POSTGRES_SERVER} -O ${CURVEPROJECT} ${CURVEPROJECT} && psql -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} -f app/installers/data/default_test_data.sql && cd -'
 alias dumptestdata='root && pg_dump -O ${CURVEPROJECT} > app/installers/data/default_test_data.sql && cd -'
+alias setadmin='db -f ${SHAREDPATH}/scripts/setAdminUser.sql'
 
 runtest() {
     local testCommand

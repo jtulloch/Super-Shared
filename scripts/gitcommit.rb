@@ -14,7 +14,8 @@ end
 def status status_line
     is_modified?(status_line) ? 'modified' :
         is_new?(status_line) ? 'new' :
-            nil
+            is_deleted?(status_line) ? 'deleted' :
+                nil
 end
 
 def is_staged? status_line
@@ -29,6 +30,10 @@ def is_new? status_line
     (indicator(status_line) == '??' || indicator(status_line) == 'A ')
 end
 
+def is_deleted? status_line
+    indicator(status_line) == 'D '
+end
+
 def handle_file status_line
     file_name = filename(status_line)
 
@@ -36,12 +41,17 @@ def handle_file status_line
         handle_new_file(file_name)
     elsif is_modified?(status_line)
         handle_modified_file(file_name, status_line)
+    elsif is_deleted?(status_line)
+        handle_deleted_file(file_name)
     end
 end
 
 def handle_new_file file_name
     complete = false
     while !complete do
+        puts ""
+        report_warnings(file_name)
+
         option = get_choice("Commit new file: #{file_name}?",{'y'=>"Add the file",'n'=>"Don't add the file",'v'=>'View the file','x'=>"Delete the file"})
 
         case option
@@ -62,6 +72,9 @@ end
 def handle_modified_file file_name, status_line
     complete = false
     while !complete do
+        puts ""
+        report_warnings(file_name)
+
         option = get_choice("Commit modified file: #{file_name}?",{'y'=>"Commit the file",'n'=>"Don't commit the file",'v'=>'Diff the file','r'=>"Revert the file"})
 
         case option
@@ -78,6 +91,34 @@ def handle_modified_file file_name, status_line
                 puts "Sorry, revert not implemented.  Select 'n' to skip."
             else nil
         end
+    end
+end
+
+def handle_deleted_file file_name
+    complete = false
+    while !complete do
+        puts ""
+
+        option = get_choice("Commit deleted file: #{file_name}?",{'y'=>"Commit the file",'n'=>"Don't commit the file"})
+
+        case option
+            when 'y'
+                file_for_commit(file_name)
+                complete = true
+            when 'n' then complete = true
+            else nil
+        end
+    end
+end
+
+def report_warnings file_name
+    key_words = ['XXX', 'debug', 'warn','TODO','wtf','dumpObject']
+    changes_grep_command = "git diff #{file_name} | egrep -v '^-' | grep --color=always -i '#{key_words.join('\|')}'"
+    
+    warnings = `#{changes_grep_command}`
+    if warnings.strip != ''
+        puts "Possible unfinished changes or debugging found."
+        puts warnings
     end
 end
 
