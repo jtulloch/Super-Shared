@@ -177,6 +177,7 @@ RPROMPT='%~/'
 
 precmd() {
     if [ ${_CHANGE_PROMPT} = 1 ]; then
+        export CURRENTBRANCH=`git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/(\1)/'`
         setprompt
     fi  
     _CHANGE_PROMPT=0
