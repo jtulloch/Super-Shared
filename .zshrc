@@ -1,3 +1,4 @@
+_CHANGE_PROMPT=0
 if [ -f $HOME/.curverc ]; then
     source $HOME/.curverc
 fi
@@ -175,10 +176,30 @@ done
 PR_RESET="%{${reset_color}%}";
 RPROMPT='%~/'
 
-cd() {
-    builtin cd $@
-    setprompt
+getCurrentBranch() {
+    git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/(\1)/'
 }
+
+precmd() {
+    if [ ${_CHANGE_PROMPT} = 1 ]; then
+        setprompt
+    fi  
+    _CHANGE_PROMPT=0
+}   
+
+preexec() {
+    case "$1" in
+    "git co"*)
+        _CHANGE_PROMPT=1
+    ;;  
+    "git checkout"*)
+        _CHANGE_PROMPT=1
+    ;;  
+    cd*)
+        _CHANGE_PROMPT=1
+    ;;  
+    esac
+}   
 
 setprompt() {
     if [ "${CURVEPROJECT}" = "" ]; then
