@@ -56,6 +56,42 @@ alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} &
 alias dumptestdata='root && pg_dump -O ${CURVEPROJECT} > app/installers/data/default_test_data.sql && cd -'
 alias setadmin='db -f ${SHAREDPATH}/scripts/setAdminUser.sql'
 
+alias riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore='dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT}'
+alias cdb='createdb -h ${CURVE_POSTGRES_SERVER} -O ${CURVEPROJECT} ${CURVEPROJECT}'
+
+cleandatabase() {
+    FILE_NAME=$1
+    if [ $# -eq 0 ]; then
+        CURRENT_BRANCH=`getCurrentBranch`
+        BRANCHED_DUMP_NAME=${CURVEPROJECT}_${CURRENT_BRANCH}_dump.sql
+
+        if [ -f ${BRANCHED_DUMP_NAME} ]; then
+            SQL_DUMP_FILE=${BRANCHED_DUMP_NAME}
+        else
+            SQL_DUMP_FILE=${CURVEPROJECT}_dump.sql
+        fi
+    else
+        if [ -a $FILE_NAME ]; then
+            SQL_DUMP_FILE=$FILE_NAME
+        else
+            return
+        fi
+    fi
+
+    root
+    riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore
+    cdb
+
+    psql -h ${CURVE_POSTGRES_SERVER} -U ${CURVEPROJECT} -f ${SQL_DUMP_FILE} ${CURVEPROJECT}
+}
+
+dumpdatabase() {
+    CURRENT_BRANCH=`getCurrentBranch`
+    root
+    pg_dump -h ${CURVE_POSTGRES_SERVER} -U ${CURVEPROJECT} -f ${CURVEPROJECT}_${CURRENT_BRANCH}_dump.sql ${CURVEPROJECT}
+}
+
+
 runtest() {
     local testCommand
     local testArg
@@ -176,7 +212,7 @@ PR_RESET="%{${reset_color}%}";
 RPROMPT='%~/'
 
 getCurrentBranch() {
-    git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/(\1)/'
+    git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/\1/'
 }
 
 precmd() {
