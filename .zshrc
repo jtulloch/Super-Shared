@@ -186,15 +186,16 @@ precmd() {
     _CHANGE_PROMPT=0
 }   
 
+chpwd() {
+    _CHANGE_PROMPT=1
+}
+
 preexec() {
     case "$1" in
     "git co"*)
         _CHANGE_PROMPT=1
     ;;  
     "git checkout"*)
-        _CHANGE_PROMPT=1
-    ;;  
-    cd*)
         _CHANGE_PROMPT=1
     ;;  
     esac
