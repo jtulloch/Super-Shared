@@ -48,27 +48,35 @@ alias tstfunc='root && ./script/test test/functional'
 alias tstunit='root && ./script/test test/unit'
 alias tstall='root && ./script/test test/unit && ./script/test test/functional'
 alias tdata='gotoHeroPath test/fixtures/app/installers/data'
-alias db='psql -h ${CURVE_POSTGRES_SERVER} $CURVEPROJECT'
-alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$CURVEPROJECT'
+
+alias db='psql -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+
+alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$(getCurrentDatabaseName)'
+
 alias cleandb='root && psql -h ${CURVE_POSTGRES_SERVER} -f ${CURVEPROJECT}_dump.sql $CURVEPROJECT'
-alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U ${CURVEPROJECT} -f ${CURVEPROJECT}_dump.sql ${CURVEPROJECT}'
-alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} && createdb -h ${CURVE_POSTGRES_SERVER} -O ${CURVEPROJECT} ${CURVEPROJECT} && psql -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} -f app/installers/data/default_test_data.sql && cd -'
-alias dumptestdata='root && pg_dump -O ${CURVEPROJECT} > app/installers/data/default_test_data.sql && cd -'
+alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U $(getCurrentDatabaseName) -f $(getCurrentDatabaseName)_dump.sql $(getCurrentDatabaseName)'
+
+alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName) && createdb -h ${CURVE_POSTGRES_SERVER} -O $(getCurrentDatabaseName) $(getCurrentDatabaseName) && psql -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName) -f app/installers/data/default_test_data.sql && cd -'
+alias dumptestdata='root && pg_dump -O $(getCurrentDatabaseName) > app/installers/data/default_test_data.sql && cd -'
 alias setadmin='db -f ${SHAREDPATH}/scripts/setAdminUser.sql'
 
-alias riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore='dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT}'
-alias cdb='createdb -h ${CURVE_POSTGRES_SERVER} -O ${CURVEPROJECT} ${CURVEPROJECT}'
+alias riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore='dropdb -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+alias cdb='createdb -h ${CURVE_POSTGRES_SERVER} -O $(getCurrentDatabaseName) $(getCurrentDatabaseName)'
+alias cdbuser='createuser -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+
+getCurrentDatabaseName() {
+    echo "${CURVEPROJECT}"
+}
 
 cleandatabase() {
     FILE_NAME=$1
     if [ $# -eq 0 ]; then
-        CURRENT_BRANCH=`getCurrentBranch`
-        BRANCHED_DUMP_NAME=${CURVEPROJECT}_${CURRENT_BRANCH}_dump.sql
+        BRANCHED_DUMP_NAME=$(getCurrentDatabaseName)_dump.sql
 
         if [ -f ${BRANCHED_DUMP_NAME} ]; then
             SQL_DUMP_FILE=${BRANCHED_DUMP_NAME}
         else
-            SQL_DUMP_FILE=${CURVEPROJECT}_dump.sql
+            SQL_DUMP_FILE=$(getCurrentDatabaseName)_dump.sql
         fi
     else
         if [ -a $FILE_NAME ]; then
@@ -82,13 +90,12 @@ cleandatabase() {
     riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore
     cdb
 
-    psql -h ${CURVE_POSTGRES_SERVER} -U ${CURVEPROJECT} -f ${SQL_DUMP_FILE} ${CURVEPROJECT}
+    psql -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${SQL_DUMP_FILE} $(getCurrentDatabaseName)
 }
 
 dumpdatabase() {
-    CURRENT_BRANCH=`getCurrentBranch`
     root
-    pg_dump -h ${CURVE_POSTGRES_SERVER} -U ${CURVEPROJECT} -f ${CURVEPROJECT}_${CURRENT_BRANCH}_dump.sql ${CURVEPROJECT}
+    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f $(getCurrentDatabaseName)_dump.sql $(getCurrentDatabaseName)
 }
 
 
