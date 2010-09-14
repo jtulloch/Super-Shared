@@ -49,13 +49,56 @@ alias tstfunc='root && ./script/test test/functional'
 alias tstunit='root && ./script/test test/unit'
 alias tstall='root && ./script/test test/unit && ./script/test test/functional'
 alias tdata='gotoHeroPath test/fixtures/app/installers/data'
-alias db='psql -h ${CURVE_POSTGRES_SERVER} -U $CURVEPROJECT'
-alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$CURVEPROJECT'
+
+alias db='psql -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+
+alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$(getCurrentDatabaseName)'
+
 alias cleandb='root && psql -h ${CURVE_POSTGRES_SERVER} -f ${CURVEPROJECT}_dump.sql $CURVEPROJECT'
-alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U ${CURVEPROJECT} -f ${CURVEPROJECT}_dump.sql ${CURVEPROJECT}'
-alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} && createdb -h ${CURVE_POSTGRES_SERVER} -O ${CURVEPROJECT} ${CURVEPROJECT} && psql -h ${CURVE_POSTGRES_SERVER} ${CURVEPROJECT} -f app/installers/data/default_test_data.sql && cd -'
-alias dumptestdata='root && pg_dump -O ${CURVEPROJECT} > app/installers/data/default_test_data.sql && cd -'
+alias dumpdb='root && pg_dump -h ${CURVE_POSTGRES_SERVER} --clean -U $(getCurrentDatabaseName) -f $(getCurrentDatabaseName)_dump.sql $(getCurrentDatabaseName)'
+
+alias loadtestdata='root && dropdb -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName) && createdb -h ${CURVE_POSTGRES_SERVER} -O $(getCurrentDatabaseName) $(getCurrentDatabaseName) && psql -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName) -f app/installers/data/default_test_data.sql && cd -'
+alias dumptestdata='root && pg_dump -O $(getCurrentDatabaseName) > app/installers/data/default_test_data.sql && cd -'
 alias setadmin='db -f ${SHAREDPATH}/scripts/setAdminUser.sql'
+
+alias riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore='dropdb -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+alias cdb='createdb -h ${CURVE_POSTGRES_SERVER} -O $(getCurrentDatabaseName) $(getCurrentDatabaseName)'
+alias cdbuser='createuser -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+
+getCurrentDatabaseName() {
+    echo "${CURVEPROJECT}"
+}
+
+cleandatabase() {
+    FILE_NAME=$1
+    if [ $# -eq 0 ]; then
+        BRANCHED_DUMP_NAME=$(getCurrentDatabaseName)_dump.sql
+
+        if [ -f ${BRANCHED_DUMP_NAME} ]; then
+            SQL_DUMP_FILE=${BRANCHED_DUMP_NAME}
+        else
+            SQL_DUMP_FILE=$(getCurrentDatabaseName)_dump.sql
+        fi
+    else
+        if [ -a $FILE_NAME ]; then
+            SQL_DUMP_FILE=$FILE_NAME
+        else
+            return
+        fi
+    fi
+
+    root
+    riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore
+    cdb
+
+    psql -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${SQL_DUMP_FILE} $(getCurrentDatabaseName)
+}
+
+dumpdatabase() {
+    root
+    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f $(getCurrentDatabaseName)_dump.sql $(getCurrentDatabaseName)
+}
+
 
 runtest() {
     local testCommand
@@ -177,7 +220,7 @@ PR_RESET="%{${reset_color}%}";
 RPROMPT='%~/'
 
 getCurrentBranch() {
-    git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/(\1)/'
+    git branch 2> /dev/null | grep --color=never -e '\* ' | sed 's/^..\(.*\)/\1/'
 }
 
 precmd() {
@@ -187,15 +230,16 @@ precmd() {
     _CHANGE_PROMPT=0
 }   
 
+chpwd() {
+    _CHANGE_PROMPT=1
+}
+
 preexec() {
     case "$1" in
     "git co"*)
         _CHANGE_PROMPT=1
     ;;  
     "git checkout"*)
-        _CHANGE_PROMPT=1
-    ;;  
-    cd*)
         _CHANGE_PROMPT=1
     ;;  
     esac
