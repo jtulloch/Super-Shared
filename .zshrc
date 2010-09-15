@@ -49,7 +49,7 @@ alias tstunit='root && ./script/test test/unit'
 alias tstall='root && ./script/test test/unit && ./script/test test/functional'
 alias tdata='gotoHeroPath test/fixtures/app/installers/data'
 
-alias db='psql -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
+alias db='psql -U $(getCurrentDatabaseName) -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
 
 alias testdb='psql -h ${CURVE_POSTGRES_SERVER} test_$(getCurrentDatabaseName)'
 
@@ -69,18 +69,20 @@ getCurrentDatabaseName() {
 }
 
 cleandatabase() {
-    FILE_NAME=$1
+    local FILE_NAME=$1
+    local SQL_DUMP_FILE
     if [ $# -eq 0 ]; then
         BRANCHED_DUMP_NAME=$(getCurrentDatabaseName)_dump.sql
 
         if [ -f ${BRANCHED_DUMP_NAME} ]; then
             SQL_DUMP_FILE=${BRANCHED_DUMP_NAME}
         else
-            SQL_DUMP_FILE=$(getCurrentDatabaseName)_dump.sql
+            SQL_DUMP_FILE=${CURVEPROJECT}_dump.sql
         fi
     else
-        if [ -a $FILE_NAME ]; then
-            SQL_DUMP_FILE=$FILE_NAME
+        FULL_FILE_PATH=`readlink -f ${FILE_NAME}`
+        if [ -f "$FULL_FILE_PATH" ]; then
+            local SQL_DUMP_FILE=$FULL_FILE_PATH
         else
             return
         fi
@@ -90,7 +92,11 @@ cleandatabase() {
     riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore
     cdb
 
-    psql -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${SQL_DUMP_FILE} $(getCurrentDatabaseName)
+    CURRENT_DATABASE=$(getCurrentDatabaseName)
+
+    echo "Cleaning database ${CURRENT_DATABASE} with [${SQL_DUMP_FILE}]."
+
+    psql -h ${CURVE_POSTGRES_SERVER} -U ${CURRENT_DATABASE} -f ${SQL_DUMP_FILE} ${CURRENT_DATABASE}
 }
 
 dumpdatabase() {
