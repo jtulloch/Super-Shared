@@ -66,7 +66,11 @@ alias cdb='createdb -h ${CURVE_POSTGRES_SERVER} -O $(getCurrentDatabaseName) $(g
 alias cdbuser='createuser -h ${CURVE_POSTGRES_SERVER} $(getCurrentDatabaseName)'
 
 getCurrentDatabaseName() {
-    echo "${CURVEPROJECT}"
+    php ${SHAREDPATH}/scripts/getCurrentDatabaseName.php
+}
+
+getCurrentHeroName() {
+    php ${SHAREDPATH}/scripts/getCurrentHeroName.php
 }
 
 cleandatabase() {
@@ -98,6 +102,16 @@ cleandatabase() {
     echo "Cleaning database ${CURRENT_DATABASE} with [${SQL_DUMP_FILE}]."
 
     psql -h ${CURVE_POSTGRES_SERVER} -U ${CURRENT_DATABASE} -f ${SQL_DUMP_FILE} ${CURRENT_DATABASE}
+    echo "Renaming schema..."
+    NAME=`cat ${SQL_DUMP_FILE} |ack-grep -i "CREATE SCHEMA"|grep -v public`
+    RENAME_SCHEMA=`echo ${NAME} |sed 's/CREATE SCHEMA //g' |sed 's/;//g'`
+    echo "Found name [${RENAME_SCHEMA}]"
+    HERONAME=$(getCurrentHeroName)
+
+    if [ "${RENAME_SCHEMA}" != "${HERONAME}" ]; then
+        echo "Renaming schema from [${RENAME_SCHEMA}] to [${HERONAME}]..."
+        db -c "ALTER SCHEMA ${RENAME_SCHEMA} RENAME TO ${HERONAME}"
+    fi
 }
 
 dumpdatabase() {

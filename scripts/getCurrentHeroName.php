@@ -5,6 +5,6 @@ $branch_name = preg_replace("/^\* +/", "", $branch_name[0]);
 
 $branch_configs = getCurrentInfo();
 
-echo "{$branch_configs[$branch_name]['database_name']}\n";
+echo "{$branch_configs[$branch_name]['hero_name']}\n";
 exit(0);
 ?>
