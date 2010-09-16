@@ -116,7 +116,15 @@ cleandatabase() {
 
 dumpdatabase() {
     root
-    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f $(getCurrentDatabaseName)_dump.sql $(getCurrentDatabaseName)
+    local DUMP_FILE_NAME
+
+    if [ $# -eq 0 ]; then
+        DUMP_FILE_NAME=$(getCurrentDatabaseName)_dump.sql
+    else
+        DUMP_FILE_NAME=$1
+    fi
+
+    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${DUMP_FILE_NAME} $(getCurrentDatabaseName)
 }
 
 
