@@ -3,6 +3,10 @@ if [ -f $HOME/.curverc ]; then
     source $HOME/.curverc
 fi
 
+if [ "${DATA_DUMP_DIR}" = "" ]; then
+    DATA_DUMP_DIR=~/data_dumps
+fi
+
 if [ "${SHAREDPATH}" = "" ]; then
     SHAREDPATH=/home/shared
 fi
@@ -76,24 +80,27 @@ getCurrentHeroName() {
 cleandatabase() {
     local FILE_NAME=$1
     local SQL_DUMP_FILE
+
     if [ $# -eq 0 ]; then
         BRANCHED_DUMP_NAME=$(getCurrentDatabaseName)_dump.sql
 
-        if [ -f ${BRANCHED_DUMP_NAME} ]; then
-            SQL_DUMP_FILE=${BRANCHED_DUMP_NAME}
+        if [ -f ${DATA_DUMP_DIR}/${BRANCHED_DUMP_NAME} ]; then
+            SQL_DUMP_FILE=${DATA_DUMP_DIR}/${BRANCHED_DUMP_NAME}
         else
-            SQL_DUMP_FILE=${CURVEPROJECT}_dump.sql
+            SQL_DUMP_FILE=${DATA_DUMP_DIR}/${CURVEPROJECT}_dump.sql
         fi
     else
-        FULL_FILE_PATH=`readlink -f ${FILE_NAME}`
-        if [ -f "$FULL_FILE_PATH" ]; then
-            local SQL_DUMP_FILE=$FULL_FILE_PATH
+        if [ -f ${DATA_DUMP_DIR}/${FILE_NAME} ]; then
+            SQL_DUMP_FILE=${DATA_DUMP_DIR}/${FILE_NAME}
+        elif [ -f ${CURVESPACE}/${CURVEPROJECT}/${FILE_NAME} ]; then
+            SQL_DUMP_FILE=${CURVESPACE}/${CURVEPROJECT}/${FILE_NAME}        
+        elif [ -f ~/client_data/${FILE_NAME} ]; then
+            SQL_DUMP_FILE=~/client_data/${FILE_NAME}
         else
             return
         fi
     fi
 
-    root
     riptheheartoutofmyfuckingdatabasebecauseidontneeditanymore
     cdb
 
@@ -115,7 +122,6 @@ cleandatabase() {
 }
 
 dumpdatabase() {
-    root
     local DUMP_FILE_NAME
 
     if [ $# -eq 0 ]; then
@@ -124,7 +130,11 @@ dumpdatabase() {
         DUMP_FILE_NAME=$1
     fi
 
-    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${DUMP_FILE_NAME} $(getCurrentDatabaseName)
+    if [ ! -d $DATA_DUMP_DIR ]; then
+        mkdir $DATA_DUMP_DIR
+    fi
+
+    pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${DATA_DUMP_DIR}/${DUMP_FILE_NAME} $(getCurrentDatabaseName)
 }
 
 

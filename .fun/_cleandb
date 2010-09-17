@@ -1,0 +1,9 @@
+#compdef cleandatabase
+
+local datadumps
+
+datadumps=`ls ${CURVESPACE}/${CURVEPROJECT}/*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+datadumps+=`ls ${DATA_DUMP_DIR}/*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+datadumps+=`ls ~/client_data/*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+
+_arguments :": :(${datadumps})"
