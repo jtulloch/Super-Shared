@@ -5,19 +5,19 @@
 ##
 
 local unitTests
-unitTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/app/models/`
+unitTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/app/models/`
 
 local functionalTests
 functionalTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/controllers/`
 
 local libTests
-libTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/app/lib/`
+libTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/app/lib/`
 
 local usTests
-usTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/us/`
+usTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/us/`
 
 local akTests
-akTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/unit/akelos/`
+akTests=`ls ${CURVESPACE}/${CURVEPROJECT}/test/functional/akelos/`
 
 _arguments  "-m:model tests:(all ${unitTests})" \
             "-f:functional tests:(all ${functionalTests})" \
