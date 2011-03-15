@@ -1,0 +1,7 @@
+#compdef dumpdatabase
+
+local datadumps
+
+datadumps=`ls -1 ${DATA_DUMP_DIR}/*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+
+_arguments :": :(${datadumps})"
