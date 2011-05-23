@@ -88,7 +88,8 @@ def handle_modified_file file_name, status_line
                 args = is_staged?(status_line) ? '--cached' : ''
                 system("/home/dale/.supershared/scripts/gitvimdiff.sh #{args} #{file_name}")
             when 'r'
-                puts "Sorry, revert not implemented.  Select 'n' to skip."
+              revert_file file_name
+              complete = true
             else nil
         end
     end
@@ -111,8 +112,12 @@ def handle_deleted_file file_name
     end
 end
 
+def revert_file file_name
+  system("git reset #{file_name} ; git co #{file_name}")
+end
+
 def report_warnings file_name
-    key_words = ['XXX', 'debug', 'warn','TODO','wtf','dumpObject']
+    key_words = ['XXX', 'debug', 'warn','TODO','wtf','dumpObject','CLEANUP']
     changes_grep_command = "git diff #{file_name} | egrep -v '^-' | grep --color=always -i '#{key_words.join('\|')}'"
     
     warnings = `#{changes_grep_command}`
