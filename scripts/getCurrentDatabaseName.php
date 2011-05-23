@@ -1,10 +1,8 @@
 <?php
 require_once("getCurrentInfo.php");
-exec("git branch 2> /dev/null | grep --color=never -e '\* '", $branch_name);
-$branch_name = preg_replace("/^\* +/", "", $branch_name[0]);
 
-$branch_configs = getCurrentInfo();
+$branch_config = getCurrentInfo();
 
-echo "{$branch_configs[$branch_name]['database_name']}\n";
+echo "{$branch_config['database_name']}\n";
 exit(0);
 ?>

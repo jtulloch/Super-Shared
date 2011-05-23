@@ -137,7 +137,6 @@ dumpdatabase() {
     pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${DATA_DUMP_DIR}/${DUMP_FILE_NAME} $(getCurrentDatabaseName)
 }
 
-
 runtest() {
     local testCommand
     local testArg
@@ -156,30 +155,26 @@ runtest() {
             lastArg="${arg}"
         done
 
-        testPath='test/'
+        testPath='test/functional/'
         case ${secondLastArg} in
         "-f"*)
-            testPath+='functional'
-
             if [ "${lastArg}" != "all" ]; then
-                testPath+="/controllers/"
+                testPath+="controllers/"
             fi
         ;;
         "-m"*)
-            testPath+='unit'
-
             if [ "${lastArg}" != "all" ]; then
-                testPath+="/app/models/"
+                testPath+="app/models/"
             fi
         ;;
         "-u"*)
-            testPath+='unit/us/'
+            testPath+='us/'
         ;;
         "-l"*)
-            testPath+='unit/app/lib/'
+            testPath+='app/lib/'
         ;;
         "-ak"*)
-            testPath+='unit/akelos/'
+            testPath+='akelos/'
         ;;
         esac
 
@@ -189,17 +184,27 @@ runtest() {
 
         testArg+=${testPath}
 
+        echo "Running: ${testArg}"
         cd ${CURVESPACE}/${CURVEPROJECT} && ${testCommand} ${testArg}
     fi
 }
 
-proj () {
-    if [ -z $1 ]; then
-        selectProject
+alias proj='choose_project'
+PROJECT_SELECTED_FUNCTION='curve_project_selected'
+curve_project_selected() {
+    if [ "$1" = "None" ]; then
+        export CURVEPROJECT=""
     else
-        export CURVEPROJECT=$1
-        hero
+        export CURVEPROJECT=${1%% *}
     fi
+    project_selected ${CURVEPROJECT}
+}
+
+PROJECT_LIST_FUNCTION='curve_list_projects'
+curve_list_projects() {
+    echo "None"
+    #listHeroes.sh | sed 's/ \[/___\[/'
+    listHeroes.sh
 }
 
 projview () {
@@ -208,41 +213,6 @@ projview () {
 
 clearProject() {
     export CURVEPROJECT=''
-    setprompt
-}
-
-selectProject() {
-    CURVEPROJECTS=()
-    PROJCOUNT=1
-
-#This is to make the for loop parse by new lines instead of whitespace
-IFS_BAK=$IFS
-IFS="
-"
-
-    echo "0) None"
-
-    for PROJ in `listHeroes.sh`
-    do
-        CURVEPROJECTS+=($PROJ)
-        echo "${PROJCOUNT}) ${PROJ}"
-        PROJCOUNT=$(( $PROJCOUNT + 1 ))
-    done
-IFS=$IFS_BAK
-IFS_BAK=
-
-    read ANSWER;
-    if [ "${ANSWER}" = "" ]; then
-        CURVEPROJECT=""
-        export CURVEPROJECT
-        cd
-    elif [ "${ANSWER}" != "0" ]; then
-        proj ${CURVEPROJECTS[$ANSWER]%% *}
-    else
-        CURVEPROJECT=""
-        export CURVEPROJECT
-        cd
-    fi
 }
 
 #
