@@ -137,7 +137,6 @@ dumpdatabase() {
     pg_dump -h ${CURVE_POSTGRES_SERVER} -U $(getCurrentDatabaseName) -f ${DATA_DUMP_DIR}/${DUMP_FILE_NAME} $(getCurrentDatabaseName)
 }
 
-
 runtest() {
     local testCommand
     local testArg
@@ -156,30 +155,26 @@ runtest() {
             lastArg="${arg}"
         done
 
-        testPath='test/'
+        testPath='test/functional/'
         case ${secondLastArg} in
         "-f"*)
-            testPath+='functional'
-
             if [ "${lastArg}" != "all" ]; then
-                testPath+="/controllers/"
+                testPath+="controllers/"
             fi
         ;;
         "-m"*)
-            testPath+='unit'
-
             if [ "${lastArg}" != "all" ]; then
-                testPath+="/app/models/"
+                testPath+="app/models/"
             fi
         ;;
         "-u"*)
-            testPath+='unit/us/'
+            testPath+='us/'
         ;;
         "-l"*)
-            testPath+='unit/app/lib/'
+            testPath+='app/lib/'
         ;;
         "-ak"*)
-            testPath+='unit/akelos/'
+            testPath+='akelos/'
         ;;
         esac
 
@@ -189,6 +184,7 @@ runtest() {
 
         testArg+=${testPath}
 
+        echo "Running: ${testArg}"
         cd ${CURVESPACE}/${CURVEPROJECT} && ${testCommand} ${testArg}
     fi
 }
