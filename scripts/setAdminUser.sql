@@ -4,7 +4,7 @@ UPDATE users SET user_name = 'admin', password = '0cc42b203b3e0b84f9d5a7b22d7885
 (
     SELECT id FROM patient_statuses WHERE name = 'Active'
 ) 
-WHERE ctid  = ANY( array(SELECT ctid FROM users WHERE user_name IS NOT NULL AND user_name != 'curve' LIMIT 1) )
+WHERE ctid  = ANY( array(SELECT ctid FROM users WHERE user_name IS NOT NULL AND trim(user_name) != '' AND user_name != 'curve' LIMIT 1) )
 ;
 
 INSERT INTO user_roles (user_id, role_id)
