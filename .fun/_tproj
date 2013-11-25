@@ -1,0 +1,23 @@
+#compdef tproj
+
+local heroList
+heroList=""
+heroes=""
+
+IFS_BAK=$IFS
+IFS="
+"
+for PROJ in `listHeroes.sh`
+do
+    first=`echo ${PROJ} |cut -d' ' -f1`	
+    second=`echo ${PROJ} |cut -d' ' -f2`	
+    TMP="${first} ${second}"
+    heroList+="$TMP "
+    heroes+="$PROJ
+"
+done
+IFS=$IFS_BAK
+IFS_BAK=
+
+_arguments  "-p:$heroes:(${heroList})" \
+            "-l:layout:(main logs)"

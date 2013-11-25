@@ -1,0 +1,7 @@
+#compdef tmuxinator
+
+local sessions
+
+sessions=`ls -1 ${HOME}/.tmuxinator/*.yml | tr '\n' '\0' | xargs -0 -n 1 basename | sed 's/\(\w*\).yml/\1/'`
+
+_arguments :": :(${sessions})"

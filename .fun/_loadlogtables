@@ -1,0 +1,9 @@
+#compdef loadlogtables 
+
+local datadumps
+
+datadumps=`ls -1 log_tables_*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+datadumps+=" "
+datadumps+=`ls -1 ~/client_data/log_tables_*.sql | tr '\n' '\0' | xargs -0 -n 1 basename`
+
+_arguments :": :(${datadumps})"
